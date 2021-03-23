@@ -1,6 +1,11 @@
 # bootleg-idrac6-client
 Remixed, M610-specific iDRAC 6 client
 
+## Prerequisites
+
+1. Dell M1000e Blade Chassis
+2. Any number of Dell PowerEdge M610 blade servers
+3. Java7 OpenJDK installed on your managment PC
 
 ## Usage
 
