@@ -23,7 +23,7 @@ In another terminal run:
 ```IDRAC_HOST=localhost:8000 IDRAC_USER=root IDRAC_PASSWORD=calvin ./kvm.sh```
 
 ### "No Free Slots Available" error
-Just use the latest cookie from the cookies file, or run:
+Just use the latest cookie from the cookies file, or use your own COOKIE obtained in some other hacky way:
 
 ```IDRAC_HOST=10.10.10.10 IDRAC_USER=root IDRAC_PASSWORD=calvin COOKIE=$(tail -1 cookies) ./kvm.sh```
 
