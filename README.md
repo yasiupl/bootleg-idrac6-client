@@ -1,5 +1,5 @@
 # bootleg-idrac6-client
-Remixed, M610-specific iDRAC 6 client
+Remixed, M610-specific iDRAC ~~6~~ 5 client
 
 ## Prerequisites
 
