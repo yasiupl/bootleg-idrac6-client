@@ -1,5 +1,6 @@
 #!/bin/sh
 
+YELLOW='\033[0;33m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
@@ -10,6 +11,8 @@ download() {
   if [ ! -f "${path}/${jar}" ]; then
 
 	URI="Applications/dellUI/Java/release"
+
+	echo -e "${YELLOW}Downloading... https://${IDRAC_HOST}/${URI}/${jar}${NC}"
 
 	wget -O "${path}/${jar}" https://${IDRAC_HOST}/${URI}/${jar} --no-check-certificate
 
@@ -43,18 +46,32 @@ fi
 
 echo -e "${GREEN}Environment ok${NC}"
 
-cd /app
-mkdir lib
+mkdir -p app
+cd app
+mkdir -p lib
 touch cookies
 
 if [ -z "${COOKIE}" ]; then
 	echo -e "${GREEN}Obtaining session cookie${NC}"
 	COOKIE=$(curl -k --data "WEBVAR_USERNAME=${IDRAC_USER}&WEBVAR_PASSWORD=${IDRAC_PASSWORD}&WEBVAR_ISCMCLOGIN=0" https://${IDRAC_HOST}/Applications/dellUI/RPC/WEBSES/create.asp 2> /dev/null | grep SESSION_COOKIE | cut -d\' -f 4)
+
+	if [[ "$COOKIE" == *"Failure_No_Free_Slot"* ]]; then
+
+		echo -e "${RED} No Free Slots, using last saved session cookie${NC}"
+
+		COOKIE=$(tail -1 cookies);
+	else
+		echo "${COOKIE}" >> cookies
+	fi
 fi
 
-echo -e "${GREEN}Cookie obtained:${NC}"
-echo $COOKIE
-echo "${COOKIE}" >> cookies
+if [ -z "${COOKIE}" ]; then
+	echo -e "${RED} Failed to obtain a cookie, try specifying COOKIE env variable${NC}"
+	sleep 2
+	exit 1
+else
+	echo -e "${GREEN}Cookie obtained: ${YELLOW}${COOKIE}${NC}"
+fi
 
 echo -e "${GREEN}Downloading required files${NC}"
 
@@ -79,10 +96,14 @@ echo -e "${GREEN}Obtaining KVM launch parameters${NC}"
 
 args=$(curl -k --cookie Cookie=SessionCookie=${COOKIE} https://${IDRAC_HOST}/Applications/dellUI/Java/jviewer.jnlp | awk -F '[<>]' '/argument/ { print $3 }')
 
-echo $args
+echo -e "${YELLOW}${args}${NC}"
+
+if [ -z "${args}" ]; then
+	echo -e "${RED} Failure obtaining KVM launch parameters${NC}"
+	sleep 2
+	exit 1
+fi
 
 echo -e "${GREEN}Running Java KVM Viewer${NC}"
 
 exec java -Djava.library.path=lib -jar JViewer.jar $args
-
-exit 1
