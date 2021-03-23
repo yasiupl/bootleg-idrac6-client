@@ -26,3 +26,11 @@ In another terminal run:
 Just use the latest cookie from the cookies file, or run:
 
 ```IDRAC_HOST=10.10.10.10 IDRAC_USER=root IDRAC_PASSWORD=calvin COOKIE=$(tail -1 cookies) ./kvm.sh```
+
+## Sources / Inspirations
+
+https://gist.github.com/TheJJ/2394cd76d3e2c34d02e3da1bd3e489b2
+
+https://github.com/DomiStyle/docker-idrac6
+
+https://github.com/Informatic/idrac-kvmclient
