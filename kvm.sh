@@ -27,21 +27,24 @@ download() {
 echo -e "${GREEN}Starting${NC}"
 
 if [ -z "${IDRAC_HOST}" ]; then
-	echo -e "${RED}Please set a proper idrac host with IDRAC_HOST${NC}"
-	sleep 2
-	exit 1
+	read -p "Enter iDRAC IP: " IDRAC_HOST
+	#echo -e "${RED}Please set a proper idrac host with IDRAC_HOST${NC}"
+	#sleep 2
+	#exit 1
 fi
 
 if [ -z "${IDRAC_USER}" ]; then
-	echo -e "${RED}Please set a proper idrac user with IDRAC_USER${NC}"
-	sleep 2
-	exit 1
+	read -p "Username: " IDRAC_USER
+	#echo -e "${RED}Please set a proper idrac user with IDRAC_USER${NC}"
+	#sleep 2
+	#exit 1
 fi
 
 if [ -z "${IDRAC_PASSWORD}" ]; then
-	echo -e "${RED}Please set a proper idrac password with IDRAC_PASSWORD${NC}"
-	sleep 2
-	exit 1
+	read -sp "Password: " IDRAC_PASSWORD
+	#echo -e "${RED}Please set a proper idrac password with IDRAC_PASSWORD${NC}"
+	#sleep 2
+	#exit 1
 fi
 
 echo -e "${GREEN}Environment ok${NC}"
@@ -55,9 +58,9 @@ if [ -z "${COOKIE}" ]; then
 	echo -e "${GREEN}Obtaining session cookie${NC}"
 	COOKIE=$(curl -k --data "WEBVAR_USERNAME=${IDRAC_USER}&WEBVAR_PASSWORD=${IDRAC_PASSWORD}&WEBVAR_ISCMCLOGIN=0" https://${IDRAC_HOST}/Applications/dellUI/RPC/WEBSES/create.asp 2> /dev/null | grep SESSION_COOKIE | cut -d\' -f 4)
 
-	if [[ "$COOKIE" == *"Failure_No_Free_Slot"* ]]; then
+	if [[ "$COOKIE" == *"_"* ]]; then
 
-		echo -e "${RED} No Free Slots, using last saved session cookie${NC}"
+		echo -e "${RED} Error ${COOKIE}, using last saved session cookie${NC}"
 
 		COOKIE=$(tail -1 cookies);
 	else
@@ -106,4 +109,4 @@ fi
 
 echo -e "${GREEN}Running Java KVM Viewer${NC}"
 
-exec java -Djava.library.path=lib -jar JViewer.jar $args
+exec sudo java -Djava.library.path=lib -jar JViewer.jar $args
