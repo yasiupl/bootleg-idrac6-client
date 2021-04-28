@@ -109,4 +109,4 @@ fi
 
 echo -e "${GREEN}Running Java KVM Viewer${NC}"
 
-exec sudo java -Djava.library.path=lib -jar JViewer.jar $args
+exec java -Djava.library.path=lib -jar JViewer.jar $args
