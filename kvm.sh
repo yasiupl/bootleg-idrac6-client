@@ -49,22 +49,24 @@ fi
 
 echo -e "${GREEN}Environment ok${NC}"
 
-mkdir -p app
-cd app
+workdir=$(dirname -- "$0")
+mkdir -p $workdir/kvm
+cd $workdir/kvm
 mkdir -p lib
-touch cookies
+touch cookies-$IDRAC_HOST
 
 if [ -z "${COOKIE}" ]; then
 	echo -e "${GREEN}Obtaining session cookie${NC}"
-	COOKIE=$(curl -k --data "WEBVAR_USERNAME=${IDRAC_USER}&WEBVAR_PASSWORD=${IDRAC_PASSWORD}&WEBVAR_ISCMCLOGIN=0" https://${IDRAC_HOST}/Applications/dellUI/RPC/WEBSES/create.asp 2> /dev/null | grep SESSION_COOKIE | cut -d\' -f 4)
-
+	response=$(curl -k --data "WEBVAR_USERNAME=${IDRAC_USER}&WEBVAR_PASSWORD=${IDRAC_PASSWORD}&WEBVAR_ISCMCLOGIN=0" https://${IDRAC_HOST}/Applications/dellUI/RPC/WEBSES/create.asp 2> /dev/null)
+	#echo $response
+	COOKIE=$(echo $response | grep SESSION_COOKIE | cut -d\' -f 4)
 	if [[ "$COOKIE" == *"_"* ]]; then
 
 		echo -e "${RED} Error ${COOKIE}, using last saved session cookie${NC}"
 
-		COOKIE=$(tail -1 cookies);
+		COOKIE=$(grep "." | tail -1 cookies-$IDRAC_HOST);
 	else
-		echo "${COOKIE}" >> cookies
+		echo "${COOKIE}" >> cookies-$IDRAC_HOST
 	fi
 fi
 
